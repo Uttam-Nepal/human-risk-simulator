@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NorthLine Retail Co. — Human Risk Simulator | MIT205 Case File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#EFE8D8;
+    --parchment-2:#E4DBC6;
+    --card:#FAF7EF;
+    --ledger:#1B2A4A;
+    --ledger-2:#28395E;
+    --ink:#232A3B;
+    --ink-soft:#5B6070;
+    --amber:#B8781F;
+    --amber-soft:#F1DCB4;
+    --teal:#2F6F6B;
+    --teal-soft:#D9EAE8;
+    --brick:#A3392F;
+    --brick-soft:#F3D9D5;
+    --line:#C9BFA4;
+    --radius:4px;
+    --shadow: 0 1px 0 rgba(27,42,74,0.06), 0 8px 24px -12px rgba(27,42,74,0.25);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, #F5EFE0 0%, transparent 60%),
+      var(--parchment);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- HEADER / CASE FILE BAR ---------- */
+  header.casebar{
+    background:linear-gradient(180deg,var(--ledger) 0%, var(--ledger-2) 100%);
+    color:#EFE8D8;
+    border-bottom:6px solid var(--amber);
+  }
+  .casebar-inner{
+    max-width:1080px;margin:0 auto;padding:28px 20px 20px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:#C9B98A;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;}
+  h1.title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,4.2vw,44px);
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{color:#B9C2D6;font-size:14.5px;max-width:520px;margin:0;}
+  .case-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:#8FA0BE;margin-top:14px;letter-spacing:.02em;
+  }
+
+  /* ---------- RISK GAUGE ---------- */
+  .gauge-card{
+    background:rgba(239,232,216,0.06);
+    border:1px solid rgba(239,232,216,0.18);
+    border-radius:var(--radius);
+    padding:14px 18px;min-width:210px;
+    backdrop-filter:blur(2px);
+  }
+  .gauge-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:#C9B98A;margin-bottom:8px;
+  }
+  .gauge-row{display:flex;align-items:center;gap:14px;}
+  .gauge-num{font-family:'Fraunces',serif;font-size:34px;font-weight:600;color:#F1DCB4;min-width:52px;}
+  .gauge-bar-track{flex:1;height:8px;background:rgba(255,255,255,0.12);border-radius:99px;overflow:hidden;}
+  .gauge-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2F6F6B,#B8781F 60%,#A3392F);width:18%;transition:width .5s ease;}
+  .gauge-caption{font-size:11px;color:#93A0BC;margin-top:8px;}
+
+  /* ---------- EVENT LOG TICKER ---------- */
+  .log-strip{
+    background:#12213D;border-top:1px solid rgba(239,232,216,0.1);
+    overflow:hidden;
+  }
+  .log-strip .wrap{padding:8px 20px;display:flex;align-items:center;gap:10px;}
+  .log-strip-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7C8CAA;
+    text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;
+  }
+  #logList{
+    display:flex;gap:18px;overflow:hidden;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#C9B98A;
+  }
+  #logList span{opacity:.9;}
+  #logList span b{color:#F1DCB4;font-weight:600;}
+
+  /* ---------- TABS ---------- */
+  nav.tabs{max-width:1080px;margin:0 auto;padding:22px 20px 0;display:flex;gap:6px;flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    background:var(--parchment-2);color:var(--ink-soft);
+    border:1px solid var(--line);border-bottom:none;
+    padding:12px 18px 10px;border-radius:6px 6px 0 0;cursor:pointer;
+    position:relative;top:1px;transition:background .15s, color .15s;
+  }
+  .tab-btn .tag{
+    display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;opacity:.6;margin-bottom:2px;
+  }
+  .tab-btn.active{
+    background:var(--card);color:var(--ledger);border-color:var(--line);
+    box-shadow:0 -2px 0 var(--amber) inset;
+  }
+  .tab-btn:not(.active):hover{background:#EFE6CE;}
+
+  main{max-width:1080px;margin:0 auto;padding:0 20px 60px;}
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:0 6px 6px 6px;
+    padding:32px;box-shadow:var(--shadow);
+  }
+  .panel[hidden]{display:none;}
+
+  .panel-head{margin-bottom:22px;border-bottom:1px dashed var(--line);padding-bottom:18px;}
+  .panel-head h2{
+    font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin:0 0 8px;color:var(--ledger);
+  }
+  .panel-head p{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:640px;}
+  .stamp{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:10px;
+  }
+  .stamp.warn{background:var(--brick-soft);color:var(--brick);}
+  .stamp.info{background:var(--teal-soft);color:var(--teal);}
+  .stamp.gold{background:var(--amber-soft);color:var(--amber);}
+
+  /* ---------- MODULE 1: INBOX ---------- */
+  .inbox-layout{display:grid;grid-template-columns:280px 1fr;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:420px;}
+  .mail-list{background:#F3EEE0;border-right:1px solid var(--line);}
+  .mail-item{
+    padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s;
+  }
+  .mail-item:hover{background:#EAE1C8;}
+  .mail-item.active{background:var(--card);border-left:3px solid var(--amber);}
+  .mail-item .sender{font-weight:600;font-size:13.5px;color:var(--ink);}
+  .mail-item .subj{font-size:12.5px;color:var(--ink-soft);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mail-item .badge{
+    display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
+    padding:2px 6px;border-radius:3px;letter-spacing:.05em;
+  }
+  .badge.correct{background:var(--teal-soft);color:var(--teal);}
+  .badge.wrong{background:var(--brick-soft);color:var(--brick);}
+  .badge.pending{background:#E9E0C6;color:var(--ink-soft);}
+
+  .mail-detail{padding:24px;display:flex;flex-direction:column;}
+  .mail-detail .hdrline{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;}
+  .mail-detail .hdrline b{color:var(--ink);font-weight:600;}
+  .mail-detail h3{font-family:'Fraunces',serif;font-size:20px;margin:10px 0 14px;color:var(--ledger);}
+  .mail-body{font-size:14px;color:var(--ink);background:#FDFBF5;border:1px solid var(--line);border-radius:4px;padding:18px;flex:1;margin-bottom:16px;}
+  .mail-body a.fakelink{color:#1a5fb4;text-decoration:underline;cursor:default;}
+  .decision-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    padding:10px 18px;border-radius:5px;border:1px solid transparent;cursor:pointer;transition:transform .1s, filter .1s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .btn-report{background:var(--brick);color:#fff;}
+  .btn-trust{background:var(--teal);color:#fff;}
+  .btn-report:hover,.btn-trust:hover{filter:brightness(1.08);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;}
+  .feedback-box{margin-top:16px;padding:14px 16px;border-radius:5px;font-size:13.5px;border:1px solid;display:none;}
+  .feedback-box.show{display:block;}
+  .feedback-box.good{background:var(--teal-soft);border-color:var(--teal);color:#1f4d49;}
+  .feedback-box.bad{background:var(--brick-soft);border-color:var(--brick);color:#6f251e;}
+  .flag-list{margin:8px 0 0;padding-left:18px;font-size:13px;}
+
+  .score-strip{
+    display:flex;justify-content:space-between;align-items:center;margin-top:20px;
+    padding-top:16px;border-top:1px dashed var(--line);flex-wrap:wrap;gap:10px;
+  }
+  .score-strip .num{font-family:'Fraunces',serif;font-size:22px;color:var(--ledger);}
+
+  /* ---------- MODULE 2: PASSWORD LAB ---------- */
+  .lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:26px;}
+  @media (max-width:720px){.lab-grid{grid-template-columns:1fr;}}
+  .pw-card{border:1px solid var(--line);border-radius:6px;padding:18px;background:#FDFBF5;}
+  .pw-card h4{margin:0 0 4px;font-family:'Fraunces',serif;font-size:16px;color:var(--ledger);}
+  .pw-card .pwval{
+    font-family:'IBM Plex Mono',monospace;font-size:14px;background:#F3EEE0;
+    padding:6px 10px;border-radius:4px;margin:8px 0;display:inline-block;letter-spacing:.02em;
+  }
+  .meter-track{height:8px;background:#E9E0C6;border-radius:99px;overflow:hidden;margin:10px 0 6px;}
+  .meter-fill{height:100%;border-radius:99px;transition:width .4s ease, background .4s ease;}
+  .metric-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .metric-row b{color:var(--ink);}
+
+  .sandbox{border:1px solid var(--line);border-radius:6px;padding:20px;background:#FDFBF5;margin-bottom:24px;}
+  .sandbox label{font-size:13px;font-weight:600;color:var(--ledger);display:block;margin-bottom:6px;}
+  .sandbox input[type=text]{
+    width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;padding:10px 12px;
+    border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink);
+  }
+  .sandbox input[type=text]:focus-visible{outline:3px solid var(--amber);outline-offset:1px;}
+  .hash-out{
+    margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;word-break:break-all;
+    background:#12213D;color:#B7E4C7;padding:12px 14px;border-radius:4px;min-height:20px;
+  }
+  .sandbox .row2{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+
+  .salt-demo{border:1px solid var(--line);border-radius:6px;padding:20px;background:#FDFBF5;}
+  .salt-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  @media (max-width:720px){.salt-pair{grid-template-columns:1fr;}}
+  .salt-out{background:#12213D;color:#F1DCB4;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    padding:10px 12px;border-radius:4px;word-break:break-all;min-height:18px;}
+  .salt-tag{font-size:11.5px;color:var(--ink-soft);margin-top:6px;}
+
+  /* ---------- MODULE 3: MFA FATIGUE ---------- */
+  .mfa-stage{border:1px solid var(--line);border-radius:6px;background:#F3EEE0;min-height:420px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;position:relative;overflow:hidden;}
+  .mfa-idle{text-align:center;max-width:420px;}
+  .mfa-idle p{color:var(--ink-soft);font-size:14px;}
+  .phone{
+    width:280px;background:#fff;border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 20px 40px -18px rgba(27,42,74,0.4);padding:0;overflow:hidden;
+  }
+  .phone-top{background:var(--ledger);color:#EFE8D8;padding:10px 16px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;display:flex;justify-content:space-between;letter-spacing:.05em;}
+  .phone-body{padding:20px;}
+  .phone-body .app{font-size:12px;color:var(--ink-soft);font-weight:600;letter-spacing:.03em;text-transform:uppercase;}
+  .phone-body h4{font-family:'Fraunces',serif;font-size:17px;margin:8px 0 10px;color:var(--ledger);}
+  .req-detail{font-size:12.5px;color:var(--ink-soft);background:#F7F3E8;border-radius:4px;padding:10px 12px;margin-bottom:14px;}
+  .req-detail div{margin:2px 0;}
+  .req-detail b{color:var(--ink);}
+  .timer-track{height:6px;background:#E9E0C6;border-radius:99px;overflow:hidden;margin-bottom:14px;}
+  .timer-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--amber) 70%,var(--brick));width:100%;transform-origin:left;}
+  .mfa-buttons{display:flex;gap:10px;}
+  .mfa-buttons .btn{flex:1;}
+  .mfa-counter{position:absolute;top:16px;left:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);}
+  .mfa-result{max-width:520px;text-align:left;}
+  .mfa-result h3{font-family:'Fraunces',serif;color:var(--ledger);margin-top:0;}
+  .timeline{margin:16px 0;padding:0;list-style:none;}
+  .timeline li{
+    display:flex;justify-content:space-between;gap:10px;font-size:13px;
+    padding:8px 10px;border-radius:4px;margin-bottom:6px;background:#F7F3E8;
+  }
+  .timeline li.flag{background:var(--brick-soft);}
+  .timeline li .t{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);font-size:11.5px;}
+
+  /* ---------- CASE LOG PAGE ---------- */
+  .log-summary{
+    display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap;
+  }
+  .log-summary-card{
+    border:1px solid var(--line);border-radius:6px;background:#FDFBF5;
+    padding:12px 20px;min-width:140px;
+  }
+  .log-summary-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;
+  }
+  .log-summary-num{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--ledger);}
+  #restartBtn{margin-left:auto;}
+  .full-log{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .full-log li{
+    display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+    padding:12px 16px;border-bottom:1px solid var(--line);background:#FDFBF5;font-size:13.5px;
+  }
+  .full-log li:last-child{border-bottom:none;}
+  .full-log li:nth-child(even){background:#F7F3E8;}
+  .full-log li .idx{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);min-width:26px;}
+  .full-log li .txt{flex:1;}
+  .full-log li .time{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+  .full-log li.empty{justify-content:center;color:var(--ink-soft);font-style:italic;}
+
+  footer{max-width:1080px;margin:0 auto;padding:26px 20px 50px;color:var(--ink-soft);font-size:12px;border-top:1px dashed var(--line);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="casebar">
+  <div class="casebar-inner">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>MIT205 · Assessment 2 · Evidence Artifact</div>
+      <h1 class="title">Human Risk Simulator</h1>
+      <p class="subtitle">A working case file for NorthLine Retail Co. — three short simulations of the human-factor failures behind the invoice-fraud incident described in our report.</p>
+      <div class="case-meta">CASE REF: NL-2024-0091 &nbsp;·&nbsp; SUBJECT: ONLINE RETAIL BUSINESS &nbsp;·&nbsp; STATUS: FOR ACADEMIC REVIEW</div>
+    </div>
+    <div class="gauge-card">
+      <div class="gauge-label">Human Risk Index</div>
+      <div class="gauge-row">
+        <div class="gauge-num" id="riskNum">18</div>
+        <div class="gauge-bar-track"><div class="gauge-bar-fill" id="riskFill"></div></div>
+      </div>
+      <div class="gauge-caption">Rises with every risky call you make across the three modules below.</div>
+    </div>
+  </div>
+</header>
+
+<div class="log-strip">
+  <div class="wrap">
+    <div class="log-strip-label">Event log</div>
+    <div id="logList"><span>Case file opened. Awaiting first decision…</span></div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="phish"><span class="tag">Module 1</span>Inbox: Invoice Fraud</button>
+  <button class="tab-btn" data-tab="pw"><span class="tag">Module 2</span>Password &amp; Hashing Lab</button>
+  <button class="tab-btn" data-tab="mfa"><span class="tag">Module 3</span>MFA Fatigue Test</button>
+  <button class="tab-btn" data-tab="log"><span class="tag">Case Log</span>Full Event History</button>
+</nav>
+
+<main>
+  <!-- ============ MODULE 1 ============ -->
+  <section class="panel" id="panel-phish">
+    <div class="panel-head">
+      <span class="stamp warn">Fast thinking under pressure</span>
+      <h2>NorthLine's Inbox, Monday 8:47am</h2>
+      <p>Six emails arrived overnight. Open each one, then decide: report it as phishing, or treat it as legitimate. This is the same decision the employee in our report made under time pressure — you have all the time you want, so use it to look for the cues she didn't have time to check.</p>
+    </div>
+
+    <div class="inbox-layout">
+      <div class="mail-list" id="mailList"></div>
+      <div class="mail-detail" id="mailDetail">
+        <p style="color:var(--ink-soft);font-size:14px;">Select an email on the left to review it.</p>
+      </div>
+    </div>
+
+    <div class="score-strip">
+      <div>Correct calls: <span class="num" id="phishScore">0 / 6</span></div>
+      <div style="font-size:12.5px;color:var(--ink-soft);max-width:460px;">Every email you get wrong is logged as a risk event above — exactly as a real missed phishing report would be.</div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 2 ============ -->
+  <section class="panel" id="panel-pw" hidden>
+    <div class="panel-head">
+      <span class="stamp info">Why hashing and length matter</span>
+      <h2>Password &amp; Hashing Lab</h2>
+      <p>The report's Figure 1 and Figure 2 are static screenshots. This lab lets you reproduce both results live, using the browser's built-in SHA-256 implementation — no data leaves this page.</p>
+    </div>
+
+    <div class="lab-grid">
+      <div class="pw-card">
+        <h4>Weak &amp; reused</h4>
+        <div class="pwval">Retail123</div>
+        <div class="meter-track"><div class="meter-fill" style="width:14%;background:var(--brick);"></div></div>
+        <div class="metric-row"><span>Entropy</span><b>~34 bits</b></div>
+        <div class="metric-row"><span>Est. crack time*</span><b style="color:var(--brick);">under 1 second</b></div>
+      </div>
+      <div class="pw-card">
+        <h4>Four-word passphrase</h4>
+        <div class="pwval">harbor-lantern-cargo-forty</div>
+        <div class="meter-track"><div class="meter-fill" style="width:96%;background:var(--teal);"></div></div>
+        <div class="metric-row"><span>Entropy</span><b>~132 bits</b></div>
+        <div class="metric-row"><span>Est. crack time*</span><b style="color:var(--teal);">longer than the age of the universe</b></div>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <label for="pwInput">Try your own test phrase (never use a real password)</label>
+      <input type="text" id="pwInput" placeholder="e.g. a short word, or a 4-word passphrase" autocomplete="off" spellcheck="false">
+      <div class="row2">
+        <div style="flex:1;min-width:220px;">
+          <div class="metric-row"><span>Entropy</span><b id="liveEntropy">–</b></div>
+          <div class="meter-track"><div class="meter-fill" id="liveMeter" style="width:0%;background:var(--ink-soft);"></div></div>
+          <div class="metric-row"><span>Est. crack time*</span><b id="liveCrack">–</b></div>
+        </div>
+      </div>
+      <div class="hash-out" id="liveHash">SHA-256 output will appear here as you type…</div>
+      <div style="font-size:11px;color:var(--ink-soft);margin-top:10px;">*Illustrative estimate only: assumes an offline attacker at 10 billion guesses/second, per-character brute force. Real-world results vary with hashing algorithm and attacker resources.</div>
+    </div>
+
+    <div class="salt-demo">
+      <h4 style="margin:0 0 4px;font-family:'Fraunces',serif;color:var(--ledger);font-size:17px;">Why salting matters</h4>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 4px;">Hash the word "password123" twice — once plain, once with a random salt attached before hashing. Same input, very different stored value.</p>
+      <button class="btn btn-trust" id="saltBtn" style="margin-top:10px;">Run salt demo</button>
+      <div class="salt-pair">
+        <div>
+          <div class="salt-tag">Plain SHA-256 (run A)</div>
+          <div class="salt-out" id="saltPlainA">–</div>
+          <div class="salt-tag">Plain SHA-256 (run B)</div>
+          <div class="salt-out" id="saltPlainB">–</div>
+        </div>
+        <div>
+          <div class="salt-tag">Salted SHA-256 (run A) — salt: <span id="saltValA">–</span></div>
+          <div class="salt-out" id="saltSaltedA">–</div>
+          <div class="salt-tag">Salted SHA-256 (run B) — salt: <span id="saltValB">–</span></div>
+          <div class="salt-out" id="saltSaltedB">–</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 3 ============ -->
+  <section class="panel" id="panel-mfa" hidden>
+    <div class="panel-head">
+      <span class="stamp gold">MFA fatigue &amp; number matching</span>
+      <h2>MFA Fatigue Test</h2>
+      <p>You're closing out a busy shift when login-approval prompts start arriving, back to back. Approve or deny each before the bar runs out. One of the six is not you.</p>
+    </div>
+
+    <div class="mfa-stage" id="mfaStage">
+      <div class="mfa-idle" id="mfaIdle">
+        <p>Six approval requests are about to arrive at NorthLine's admin portal, each one a little faster than the last — just like a real MFA-bombing attempt.</p>
+        <button class="btn btn-trust" id="mfaStart">Start shift simulation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CASE LOG ============ -->
+  <section class="panel" id="panel-log" hidden>
+    <div class="panel-head">
+      <span class="stamp info">Full session record</span>
+      <h2>Case Log</h2>
+      <p>Every decision from all three modules, in order, with its effect on the Human Risk Index. Use this as your evidence trail, or start over with a clean case file.</p>
+    </div>
+
+    <div class="log-summary">
+      <div class="log-summary-card">
+        <div class="log-summary-label">Current Human Risk Index</div>
+        <div class="log-summary-num" id="logPageRisk">18</div>
+      </div>
+      <div class="log-summary-card">
+        <div class="log-summary-label">Events recorded</div>
+        <div class="log-summary-num" id="logPageCount">1</div>
+      </div>
+      <button class="btn btn-report" id="restartBtn">Restart session</button>
+    </div>
+
+    <ul class="full-log" id="fullLogList"></ul>
+  </section>
+</main>
+
+<footer>
+  Simulated environment. All names, emails, addresses and credentials are fictional and generated for this coursework demonstration — no real accounts, breach data or personal information are used, in line with the Assessment 2 safety rule. Built as a standalone practical-evidence artifact to accompany the NorthLine Retail Co. case report, MIT205 Human Factors in Cybersecurity.
+</footer>
+
+<script>
+/* ================= SHARED: RISK INDEX + LOG ================= */
+const RISK_START = 18;
+let risk = RISK_START;
+const riskNum = document.getElementById('riskNum');
+const riskFill = document.getElementById('riskFill');
+const logList = document.getElementById('logList');
+const INITIAL_LOG = 'Case file opened. Awaiting first decision…';
+let logEntries = [INITIAL_LOG];
+let fullHistory = [{ text: INITIAL_LOG, time: nowLabel(), delta: null }];
+
+function nowLabel(){
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+function setRisk(v){
+  risk = Math.max(4, Math.min(100, v));
+  riskNum.textContent = Math.round(risk);
+  riskFill.style.width = risk + '%';
+}
+function logEvent(text, bump){
+  if(typeof bump === 'number') setRisk(risk + bump);
+  logEntries.unshift(text);
+  logEntries = logEntries.slice(0,6);
+  logList.innerHTML = logEntries.map(e => `<span>▸ ${e}</span>`).join('');
+  fullHistory.push({ text, time: nowLabel(), delta: typeof bump === 'number' ? bump : null });
+  renderFullLog();
+}
+setRisk(RISK_START);
+
+function renderFullLog(){
+  const el = document.getElementById('fullLogList');
+  if(!el) return; // panel not yet in DOM on first call — fine, re-rendered on tab open
+  if(fullHistory.length === 0){
+    el.innerHTML = `<li class="empty">No events yet.</li>`;
+  } else {
+    el.innerHTML = fullHistory.map((e,i)=>{
+      const deltaTxt = e.delta ? ` <span style="color:${e.delta>0?'var(--brick)':'var(--teal)'};">(${e.delta>0?'+':''}${e.delta} risk)</span>` : '';
+      return `<li><span class="idx">${i+1}.</span><span class="txt">${e.text}${deltaTxt}</span><span class="time">${e.time}</span></li>`;
+    }).join('');
+  }
+  const pageRisk = document.getElementById('logPageRisk');
+  const pageCount = document.getElementById('logPageCount');
+  if(pageRisk) pageRisk.textContent = Math.round(risk);
+  if(pageCount) pageCount.textContent = fullHistory.length;
+}
+
+function restartSession(){
+  clearTimeout(mfaTimerHandle);
+  // reset shared risk + log
+  setRisk(RISK_START);
+  logEntries = [INITIAL_LOG];
+  logList.innerHTML = `<span>${INITIAL_LOG}</span>`;
+  fullHistory = [{ text: INITIAL_LOG, time: nowLabel(), delta: null }];
+  renderFullLog();
+  // reset module 1 — phishing inbox
+  phishState = {};
+  activeMailId = null;
+  renderMailList();
+  document.getElementById('mailDetail').innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">Select an email on the left to review it.</p>`;
+  updatePhishScore();
+  // reset module 2 — password lab
+  pwInput.value = '';
+  pwTouched = false;
+  liveHash.textContent = 'SHA-256 output will appear here as you type…';
+  liveEntropy.textContent = '–'; liveCrack.textContent = '–';
+  liveMeter.style.width = '0%'; liveMeter.style.background = 'var(--ink-soft)';
+  ['saltPlainA','saltPlainB','saltValA','saltValB','saltSaltedA','saltSaltedB'].forEach(id=>{
+    document.getElementById(id).textContent = '–';
+  });
+  // reset module 3 — MFA fatigue
+  resetMfaModule();
+}
+
+/* ================= TABS ================= */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.hidden = true);
+    document.getElementById('panel-'+btn.dataset.tab).hidden = false;
+    if(btn.dataset.tab === 'log') renderFullLog();
+  });
+});
+
+document.getElementById('restartBtn').addEventListener('click', restartSession);
+
+/* ================= MODULE 1: PHISHING INBOX ================= */
+const emails = [
+  {
+    id:1, sender:'Meridian Supplies — Accounts',
+    from:'accounts@meridian-supplies.co',
+    subject:'INVOICE #4471 — OVERDUE, pay today to avoid supply hold',
+    body:`Hi,<br><br>Your account is overdue. Please settle Invoice #4471 ($2,340.00) today to avoid your supply account being placed on hold.<br><br>Pay now: <a class="fakelink">https://meridian-supplies.co/pay/4471</a><br><br>Regards,<br>Accounts Team`,
+    isPhish:true,
+    flags:['Sender domain is "meridian-supplies.co" — NorthLine\'s real supplier uses "meridiansupplies.com.au"','Urgent subject line pressures a fast decision','Generic greeting ("Hi,") instead of a named contact','Payment link doesn\'t match the supplier\'s known site']
+  },
+  {
+    id:2, sender:'IT Support',
+    from:'support@northline-it-help.com',
+    subject:'Action required: your password expires in 24 hours',
+    body:`Your NorthLine account password will expire in 24 hours. To keep access, verify your details here:<br><br><a class="fakelink">https://northline-portal-verify.com/login</a><br><br>IT Support`,
+    isPhish:true,
+    flags:['NorthLine has no internal "IT Support" team per the case background','Domain "northline-it-help.com" is not NorthLine\'s real domain','Creates urgency around losing access','Link goes to a lookalike login page, not an internal system']
+  },
+  {
+    id:3, sender:'Sarah Chen (HR)',
+    from:'sarah.chen@northlineretail.com.au',
+    subject:'Roster for next week',
+    body:`Hi team,<br><br>Next week's roster is up on the shared calendar. Let me know if you need to swap a shift.<br><br>Thanks,<br>Sarah`,
+    isPhish:false,
+    flags:['Correct internal domain (northlineretail.com.au)','No links, no urgency, plain routine message','Matches a real, expected internal process']
+  },
+  {
+    id:4, sender:'Xero',
+    from:'noreply@post.xero.com',
+    subject:'Your invoice payment receipt — INV-0032',
+    body:`This confirms your payment of $412.00 for Invoice INV-0032 was processed successfully. No action is required.<br><br>View in Xero (log in directly at xero.com — we recommend never clicking email links to enter financial credentials).`,
+    isPhish:false,
+    flags:['Recognised accounting platform domain','Purely informational — no urgent call to action','Explicitly advises against clicking financial-login links, a good practice sign']
+  },
+  {
+    id:5, sender:'Australia Post',
+    from:'delivery@auspost-redelivery.net',
+    subject:'Delivery failed — reschedule now or parcel returns to sender',
+    body:`We attempted delivery of your parcel today but nobody was available. Reschedule within 24 hours or your parcel will be returned.<br><br><a class="fakelink">https://auspost-redelivery.net/reschedule</a>`,
+    isPhish:true,
+    flags:['Real Australia Post domain is auspost.com.au, not "auspost-redelivery.net"','24-hour deadline manufactures urgency','Generic, no parcel or tracking number given','Unrelated to any expected NorthLine delivery']
+  },
+  {
+    id:6, sender:'Woolworths Business',
+    from:'statements@woolworths.com.au',
+    subject:'Your monthly business account statement is ready',
+    body:`Your NorthLine business account statement for last month is now available in your online account. Log in at woolworths.com.au to view it.<br><br>No attachments are included in this email.`,
+    isPhish:false,
+    flags:['Correct, verifiable domain','No links requesting login — points to the known site instead','Calm, routine tone with no deadline pressure']
+  },
+];
+
+let phishState = {}; // id -> 'correct' | 'wrong'
+let activeMailId = null;
+
+function renderMailList(){
+  const list = document.getElementById('mailList');
+  list.innerHTML = emails.map(m=>{
+    const st = phishState[m.id];
+    const badge = st ? `<span class="badge ${st}">${st==='correct'?'✓ correct call':'✕ missed it'}</span>` : `<span class="badge pending">not reviewed</span>`;
+    return `<div class="mail-item ${activeMailId===m.id?'active':''}" data-id="${m.id}">
+      <div class="sender">${m.sender}</div>
+      <div class="subj">${m.subject}</div>
+      ${badge}
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.mail-item').forEach(el=>{
+    el.addEventListener('click', ()=> openMail(parseInt(el.dataset.id)));
+  });
+}
+
+function openMail(id){
+  activeMailId = id;
+  renderMailList();
+  const m = emails.find(e=>e.id===id);
+  const decided = !!phishState[id];
+  const detail = document.getElementById('mailDetail');
+  detail.innerHTML = `
+    <div class="hdrline">From: <b>${m.sender}</b> &lt;${m.from}&gt;</div>
+    <div class="hdrline">To: staff@northlineretail.com.au</div>
+    <h3>${m.subject}</h3>
+    <div class="mail-body">${m.body}</div>
+    <div class="decision-row">
+      <button class="btn btn-report" id="btnReport" ${decided?'disabled':''}>Report as phishing</button>
+      <button class="btn btn-trust" id="btnTrust" ${decided?'disabled':''}>This looks legitimate</button>
+    </div>
+    <div class="feedback-box" id="fbBox"></div>
+  `;
+  if(decided){
+    showFeedback(m, phishState[id]==='correct');
+  } else {
+    document.getElementById('btnReport').addEventListener('click', ()=>decide(m, true));
+    document.getElementById('btnTrust').addEventListener('click', ()=>decide(m, false));
+  }
+}
+
+function decide(m, reportedAsPhish){
+  const correct = (reportedAsPhish === m.isPhish);
+  phishState[m.id] = correct ? 'correct' : 'wrong';
+  renderMailList();
+  document.getElementById('btnReport').disabled = true;
+  document.getElementById('btnTrust').disabled = true;
+  showFeedback(m, correct);
+  updatePhishScore();
+  if(correct){
+    logEvent(`Correctly ${m.isPhish?'reported':'trusted'}: "${m.subject.slice(0,38)}…"`, -3);
+  } else {
+    logEvent(`Missed it: "${m.subject.slice(0,38)}…" — ${m.isPhish?'this was phishing':'this was a legitimate email'}`, +9);
+  }
+}
+
+function showFeedback(m, correct){
+  const box = document.getElementById('fbBox');
+  box.classList.add('show', correct?'good':'bad');
+  box.innerHTML = `<strong>${correct ? '✓ Correct call.' : '✕ Not quite.'}</strong> This email was ${m.isPhish ? 'a phishing attempt' : 'legitimate'}.
+    <ul class="flag-list">${m.flags.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+}
+
+function updatePhishScore(){
+  const correctCount = Object.values(phishState).filter(v=>v==='correct').length;
+  document.getElementById('phishScore').textContent = `${correctCount} / 6`;
+}
+renderMailList();
+
+/* ================= MODULE 2: PASSWORD + HASHING ================= */
+async function sha256Hex(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function entropyBits(str){
+  if(!str) return 0;
+  let pool = 0;
+  if(/[a-z]/.test(str)) pool += 26;
+  if(/[A-Z]/.test(str)) pool += 26;
+  if(/[0-9]/.test(str)) pool += 10;
+  if(/[^a-zA-Z0-9]/.test(str)) pool += 32;
+  if(pool === 0) pool = 1;
+  return str.length * Math.log2(pool);
+}
+
+function crackTimeLabel(bits){
+  const guessesPerSec = 1e10;
+  // seconds = 2^(bits-1) / guessesPerSec
+  const logSeconds = (bits - 1) * Math.log10(2) - Math.log10(guessesPerSec);
+  if(logSeconds < 0) return 'under 1 second';
+  const seconds = Math.pow(10, logSeconds);
+  const units = [
+    ['seconds',1],['minutes',60],['hours',3600],['days',86400],
+    ['years',31557600],['centuries',3155760000],['ages of the universe',4.35e17]
+  ];
+  if(seconds > 4.35e17) return 'longer than the age of the universe';
+  let val = seconds, label='seconds';
+  for(let i=1;i<units.length;i++){
+    if(seconds < units[i][1]) break;
+    val = seconds/units[i][1]; label = units[i][0];
+  }
+  if(val > 1000) return `over ${Math.round(val).toLocaleString()} ${label}`;
+  return `~${val < 10 ? val.toFixed(1) : Math.round(val)} ${label}`;
+}
+
+const pwInput = document.getElementById('pwInput');
+const liveHash = document.getElementById('liveHash');
+const liveEntropy = document.getElementById('liveEntropy');
+const liveCrack = document.getElementById('liveCrack');
+const liveMeter = document.getElementById('liveMeter');
+let pwTouched = false;
+
+pwInput.addEventListener('input', async ()=>{
+  const v = pwInput.value;
+  if(!pwTouched && v.length>0){ pwTouched = true; }
+  if(v.length === 0){
+    liveHash.textContent = 'SHA-256 output will appear here as you type…';
+    liveEntropy.textContent = '–'; liveCrack.textContent = '–';
+    liveMeter.style.width='0%'; liveMeter.style.background='var(--ink-soft)';
+    return;
+  }
+  const bits = entropyBits(v);
+  liveEntropy.textContent = Math.round(bits) + ' bits';
+  liveCrack.textContent = crackTimeLabel(bits);
+  const pct = Math.max(4, Math.min(100, bits/1.4));
+  liveMeter.style.width = pct + '%';
+  liveMeter.style.background = bits < 45 ? 'var(--brick)' : bits < 80 ? 'var(--amber)' : 'var(--teal)';
+  liveHash.textContent = 'computing…';
+  const hash = await sha256Hex(v);
+  liveHash.textContent = hash;
+});
+pwInput.addEventListener('blur', ()=>{
+  if(pwTouched){
+    const bits = entropyBits(pwInput.value);
+    if(bits < 45){
+      logEvent('Sandbox test phrase scored low entropy — vulnerable to fast cracking', +4);
+    } else {
+      logEvent('Sandbox test phrase scored strong entropy', -2);
+    }
+    pwTouched = false;
+  }
+});
+
+document.getElementById('saltBtn').addEventListener('click', async ()=>{
+  const word = 'password123';
+  const plainA = await sha256Hex(word);
+  const plainB = await sha256Hex(word);
+  const saltA = Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const saltB = Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const saltedA = await sha256Hex(word + saltA);
+  const saltedB = await sha256Hex(word + saltB);
+  document.getElementById('saltPlainA').textContent = plainA;
+  document.getElementById('saltPlainB').textContent = plainB;
+  document.getElementById('saltValA').textContent = saltA;
+  document.getElementById('saltValB').textContent = saltB;
+  document.getElementById('saltSaltedA').textContent = saltedA;
+  document.getElementById('saltSaltedB').textContent = saltedB;
+  logEvent('Ran salt demo — identical password, non-identical stored hashes', -1);
+});
+
+/* ================= MODULE 3: MFA FATIGUE ================= */
+const mfaPrompts = [
+  {device:'iPhone 13', location:'Melbourne, AU', app:'NorthLine Admin Portal', bad:false, duration:6000},
+  {device:'iPhone 13', location:'Melbourne, AU', app:'NorthLine Admin Portal', bad:false, duration:5000},
+  {device:'iPhone 13', location:'Melbourne, AU', app:'NorthLine Admin Portal', bad:false, duration:4400},
+  {device:'Windows PC', location:'Kyiv, Ukraine', app:'NorthLine Admin Portal', bad:true, duration:3800},
+  {device:'iPhone 13', location:'Melbourne, AU', app:'NorthLine Admin Portal', bad:false, duration:3200},
+  {device:'iPhone 13', location:'Melbourne, AU', app:'NorthLine Admin Portal', bad:false, duration:2800},
+];
+let mfaIndex = 0;
+let mfaResults = [];
+let mfaTimerHandle = null;
+
+function bindMfaStart(){
+  const btn = document.getElementById('mfaStart');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    mfaIndex = 0; mfaResults = [];
+    logEvent('MFA fatigue simulation started — six requests inbound', 0);
+    showPrompt();
+  });
+}
+function resetMfaModule(){
+  clearTimeout(mfaTimerHandle);
+  mfaIndex = 0; mfaResults = [];
+  const stage = document.getElementById('mfaStage');
+  stage.innerHTML = `<div class="mfa-idle" id="mfaIdle"><p>Six approval requests are about to arrive at NorthLine's admin portal, each one a little faster than the last — just like a real MFA-bombing attempt.</p><button class="btn btn-trust" id="mfaStart">Start shift simulation</button></div>`;
+  bindMfaStart();
+}
+bindMfaStart();
+
+function showPrompt(){
+  const stage = document.getElementById('mfaStage');
+  if(mfaIndex >= mfaPrompts.length){
+    finishMfa();
+    return;
+  }
+  const p = mfaPrompts[mfaIndex];
+  stage.innerHTML = `
+    <div class="mfa-counter">Request ${mfaIndex+1} of ${mfaPrompts.length}</div>
+    <div class="phone">
+      <div class="phone-top"><span>NorthLine Authenticator</span><span>now</span></div>
+      <div class="phone-body">
+        <div class="app">${p.app}</div>
+        <h4>Approve sign-in?</h4>
+        <div class="req-detail">
+          <div><b>Device:</b> ${p.device}</div>
+          <div><b>Location:</b> ${p.location}</div>
+        </div>
+        <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+        <div class="mfa-buttons">
+          <button class="btn btn-trust" id="mfaApprove">Approve</button>
+          <button class="btn btn-report" id="mfaDeny">Deny</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const start = Date.now();
+  const fill = document.getElementById('timerFill');
+  fill.style.transition = `width ${p.duration}ms linear`;
+  requestAnimationFrame(()=>{ fill.style.width = '0%'; });
+
+  let settled = false;
+  mfaTimerHandle = setTimeout(()=>{
+    if(settled) return;
+    settled = true;
+    recordMfa(p, 'auto-approved (ran out of time)', p.duration, true);
+  }, p.duration);
+
+  document.getElementById('mfaApprove').addEventListener('click', ()=>{
+    if(settled) return; settled = true;
+    clearTimeout(mfaTimerHandle);
+    recordMfa(p, 'approved', Date.now()-start, false);
+  });
+  document.getElementById('mfaDeny').addEventListener('click', ()=>{
+    if(settled) return; settled = true;
+    clearTimeout(mfaTimerHandle);
+    recordMfa(p, 'denied', Date.now()-start, false);
+  });
+}
+
+function recordMfa(p, action, ms, timedOut){
+  const wasApproved = action.includes('approved');
+  mfaResults.push({...p, action, ms, timedOut});
+  if(p.bad && wasApproved){
+    logEvent(`Approved a sign-in from ${p.location} — this was the attacker`, +18);
+  } else if(p.bad && !wasApproved){
+    logEvent(`Denied the ${p.location} request — caught the fraudulent one`, -8);
+  } else if(timedOut){
+    logEvent('Prompt ran out and auto-approved — fatigue tap', +5);
+  }
+  mfaIndex++;
+  showPrompt();
+}
+
+function finishMfa(){
+  const stage = document.getElementById('mfaStage');
+  const badOne = mfaResults.find(r=>r.bad);
+  const caughtBad = badOne && badOne.action === 'denied';
+  const avgFirstHalf = avgMs(mfaResults.slice(0,3));
+  const avgSecondHalf = avgMs(mfaResults.slice(3));
+  stage.innerHTML = `
+    <div class="mfa-result">
+      <span class="stamp ${caughtBad ? 'info' : 'warn'}">${caughtBad ? 'Attack denied' : 'Attack succeeded'}</span>
+      <h3>${caughtBad ? 'You caught the fraudulent request.' : "You approved the attacker's login."}</h3>
+      <p style="color:var(--ink-soft);font-size:13.5px;">
+        Request 4 came from <b>Kyiv, Ukraine on a Windows PC</b> — nothing like NorthLine's usual Melbourne iPhone logins.
+        ${caughtBad ? 'Under pressure, you still checked the details and denied it.' : 'Under repeated prompts, it slipped through — this is exactly how MFA-fatigue (MFA-bombing) attacks succeed in the real world.'}
+      </p>
+      <ul class="timeline">
+        ${mfaResults.map((r,i)=>`<li class="${r.bad?'flag':''}"><span>${i+1}. ${r.device}, ${r.location} — <b>${r.action}</b>${r.bad?' ⚠ (attacker)':''}</span><span class="t">${(r.ms/1000).toFixed(1)}s</span></li>`).join('')}
+      </ul>
+      <p style="font-size:13px;color:var(--ink-soft);">
+        Average decision time dropped from <b>${(avgFirstHalf/1000).toFixed(1)}s</b> (first 3 requests) to <b>${(avgSecondHalf/1000).toFixed(1)}s</b> (last 3) —
+        a measurable fatigue effect, even in this short test. Number-matching (typing a code shown on the login screen into the prompt) removes the option to tap "Approve" without looking.
+      </p>
+      <button class="btn btn-trust" id="mfaRestart" style="margin-top:6px;">Run again</button>
+    </div>
+  `;
+  document.getElementById('mfaRestart').addEventListener('click', resetMfaModule);
+}
+function avgMs(arr){
+  if(!arr.length) return 0;
+  return arr.reduce((s,r)=>s+r.ms,0)/arr.length;
+}
+</script>
+</body>
+</html>
