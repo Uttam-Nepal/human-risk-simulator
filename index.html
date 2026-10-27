@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      NorthLine Retail Co. — Human Risk Simulator | MIT205 Case File
-    </title>
+    <title>Human Risk Simulator — Interactive Security Awareness Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
@@ -100,7 +98,7 @@
         padding: 0 20px;
       }
 
-      /* ---------- HEADER / CASE FILE BAR ---------- */
+      /* ---------- HEADER BAR ---------- */
       header.casebar {
         background: linear-gradient(
           180deg,
@@ -151,7 +149,7 @@
         max-width: 520px;
         margin: 0;
       }
-      .case-meta {
+      .hero-meta {
         font-family: "IBM Plex Mono", monospace;
         font-size: 11px;
         color: #8fa0be;
@@ -861,7 +859,7 @@
         font-size: 11.5px;
       }
 
-      /* ---------- CASE LOG PAGE ---------- */
+      /* ---------- SESSION LOG PAGE ---------- */
       .log-summary {
         display: flex;
         align-items: center;
@@ -970,17 +968,17 @@
       <div class="casebar-inner">
         <div>
           <div class="eyebrow">
-            <span class="dot"></span>MIT205 · Assessment 2 · Evidence Artifact
+            <span class="dot"></span>Interactive security awareness lab
           </div>
           <h1 class="title">Human Risk Simulator</h1>
           <p class="subtitle">
-            A working case file for NorthLine Retail Co. — three short
-            simulations of the human-factor failures behind the invoice-fraud
-            incident described in our report.
+            Three short simulations of how people, not just software, decide
+            security outcomes: a phishing inbox, a hashing lab and a timed
+            approval test.
           </p>
-          <div class="case-meta">
-            CASE REF: NL-2024-0091 &nbsp;·&nbsp; SUBJECT: ONLINE RETAIL BUSINESS
-            &nbsp;·&nbsp; STATUS: FOR ACADEMIC REVIEW
+          <div class="hero-meta">
+            FOCUS: PHISHING · PASSWORDS · MFA &nbsp;·&nbsp; TYPE: SIMULATION
+            &nbsp;·&nbsp; DATA: FICTIONAL
           </div>
         </div>
         <div class="header-right">
@@ -1005,7 +1003,7 @@
       <div class="wrap">
         <div class="log-strip-label">Event log</div>
         <div id="logList">
-          <span>Case file opened. Awaiting first decision…</span>
+          <span>Session started. Awaiting first decision…</span>
         </div>
       </div>
     </div>
@@ -1021,7 +1019,7 @@
         <span class="tag">Module 3</span>MFA Fatigue Test
       </button>
       <button class="tab-btn" data-tab="log">
-        <span class="tag">Case Log</span>Full Event History
+        <span class="tag">Session</span>Event Log
       </button>
     </nav>
 
@@ -1030,13 +1028,12 @@
       <section class="panel" id="panel-phish">
         <div class="panel-head">
           <span class="stamp warn">Fast thinking under pressure</span>
-          <h2>NorthLine's Inbox, Monday 8:47am</h2>
+          <h2>The inbox, Monday 8:47am</h2>
           <p>
             Six emails arrived overnight. Open each one, then decide: report it
-            as phishing, or treat it as legitimate. This is the same decision
-            the employee in our report made under time pressure — you have all
-            the time you want, so use it to look for the cues she didn't have
-            time to check.
+            as phishing, or treat it as legitimate. A real employee makes this
+            call under time pressure. You have all the time you want, so use it
+            to look for the cues they wouldn't have time to check.
           </p>
         </div>
 
@@ -1069,13 +1066,12 @@
           <span class="stamp gold">Built from scratch — no Web Crypto API</span>
           <h2>Password &amp; Hashing Lab</h2>
           <p>
-            The report's Figure 1 and Figure 2 are static screenshots. This lab
-            lets you reproduce both results live. The SHA-256 hashing here is
-            our own JavaScript implementation of the FIPS 180-4 algorithm —
-            written and verified by hand, not delegated to the browser's
-            built-in <code>crypto.subtle</code> API — so every hash you see on
-            this page is genuinely computed by our code. Nothing typed here
-            leaves this page.
+            This lab lets you see how hashing and password strength work, live.
+            The SHA-256 hashing here is a from-scratch JavaScript implementation
+            of the FIPS 180-4 algorithm, not the browser's built-in
+            <code>crypto.subtle</code> API, so every hash you see on this page
+            is computed by this page's own code. Nothing typed here leaves this
+            page.
           </p>
         </div>
 
@@ -1209,7 +1205,7 @@
         <div class="mfa-stage" id="mfaStage">
           <div class="mfa-idle" id="mfaIdle">
             <p>
-              Six approval requests are about to arrive at NorthLine's admin
+              Six approval requests are about to arrive at the company's admin
               portal, each one a little faster than the last — just like a real
               MFA-bombing attempt.
             </p>
@@ -1220,15 +1216,15 @@
         </div>
       </section>
 
-      <!-- ============ CASE LOG ============ -->
+      <!-- ============ SESSION LOG ============ -->
       <section class="panel" id="panel-log" hidden>
         <div class="panel-head">
           <span class="stamp info">Full session record</span>
-          <h2>Case Log</h2>
+          <h2>Session Log</h2>
           <p>
             Every decision from all three modules, in order, with its effect on
-            the Human Risk Index. Use this as your evidence trail, or start over
-            with a clean case file.
+            the Human Risk Index. Review your choices here, or start over with a
+            clean session.
           </p>
         </div>
 
@@ -1252,11 +1248,9 @@
 
     <footer>
       Simulated environment. All names, emails, addresses and credentials are
-      fictional and generated for this coursework demonstration — no real
-      accounts, breach data or personal information are used, in line with the
-      Assessment 2 safety rule. Built as a standalone practical-evidence
-      artifact to accompany the NorthLine Retail Co. case report, MIT205 Human
-      Factors in Cybersecurity.
+      fictional — no real accounts, breach data or personal information are
+      used. Built with HTML, CSS and vanilla JavaScript; nothing typed here
+      leaves the page.
     </footer>
 
     <script>
@@ -1292,7 +1286,7 @@
       const riskNum = document.getElementById("riskNum");
       const riskFill = document.getElementById("riskFill");
       const logList = document.getElementById("logList");
-      const INITIAL_LOG = "Case file opened. Awaiting first decision…";
+      const INITIAL_LOG = "Session started. Awaiting first decision…";
       let logEntries = [INITIAL_LOG];
       let fullHistory = [{ text: INITIAL_LOG, time: nowLabel(), delta: null }];
 
@@ -1409,7 +1403,7 @@
           body: `Hi,<br><br>Your account is overdue. Please settle Invoice #4471 ($2,340.00) today to avoid your supply account being placed on hold.<br><br>Pay now: <a class="fakelink">https://meridian-supplies.co/pay/4471</a><br><br>Regards,<br>Accounts Team`,
           isPhish: true,
           flags: [
-            'Sender domain is "meridian-supplies.co" — NorthLine\'s real supplier uses "meridiansupplies.com.au"',
+            'Sender domain is "meridian-supplies.co" — your real supplier uses "meridiansupplies.com.au"',
             "Urgent subject line pressures a fast decision",
             'Generic greeting ("Hi,") instead of a named contact',
             "Payment link doesn't match the supplier's known site",
@@ -1418,13 +1412,13 @@
         {
           id: 2,
           sender: "IT Support",
-          from: "support@northline-it-help.com",
+          from: "support@company-it-help.com",
           subject: "Action required: your password expires in 24 hours",
-          body: `Your NorthLine account password will expire in 24 hours. To keep access, verify your details here:<br><br><a class="fakelink">https://northline-portal-verify.com/login</a><br><br>IT Support`,
+          body: `Your account password will expire in 24 hours. To keep access, verify your details here:<br><br><a class="fakelink">https://company-portal-verify.com/login</a><br><br>IT Support`,
           isPhish: true,
           flags: [
-            'NorthLine has no internal "IT Support" team per the case background',
-            'Domain "northline-it-help.com" is not NorthLine\'s real domain',
+            'The company has no internal "IT Support" team',
+            'Domain "company-it-help.com" is not the company\'s real domain',
             "Creates urgency around losing access",
             "Link goes to a lookalike login page, not an internal system",
           ],
@@ -1432,12 +1426,12 @@
         {
           id: 3,
           sender: "Sarah Chen (HR)",
-          from: "sarah.chen@northlineretail.com.au",
+          from: "sarah.chen@company.example",
           subject: "Roster for next week",
           body: `Hi team,<br><br>Next week's roster is up on the shared calendar. Let me know if you need to swap a shift.<br><br>Thanks,<br>Sarah`,
           isPhish: false,
           flags: [
-            "Correct internal domain (northlineretail.com.au)",
+            "Correct internal domain (company.example)",
             "No links, no urgency, plain routine message",
             "Matches a real, expected internal process",
           ],
@@ -1467,7 +1461,7 @@
             'Real Australia Post domain is auspost.com.au, not "auspost-redelivery.net"',
             "24-hour deadline manufactures urgency",
             "Generic, no parcel or tracking number given",
-            "Unrelated to any expected NorthLine delivery",
+            "Unrelated to any delivery the business is expecting",
           ],
         },
         {
@@ -1475,7 +1469,7 @@
           sender: "Woolworths Business",
           from: "statements@woolworths.com.au",
           subject: "Your monthly business account statement is ready",
-          body: `Your NorthLine business account statement for last month is now available in your online account. Log in at woolworths.com.au to view it.<br><br>No attachments are included in this email.`,
+          body: `Your business account statement for last month is now available in your online account. Log in at woolworths.com.au to view it.<br><br>No attachments are included in this email.`,
           isPhish: false,
           flags: [
             "Correct, verifiable domain",
@@ -1516,7 +1510,7 @@
         const detail = document.getElementById("mailDetail");
         detail.innerHTML = `
     <div class="hdrline">From: <b>${m.sender}</b> &lt;${m.from}&gt;</div>
-    <div class="hdrline">To: staff@northlineretail.com.au</div>
+    <div class="hdrline">To: staff@company.example</div>
     <h3>${m.subject}</h3>
     <div class="mail-body">${m.body}</div>
     <div class="decision-row">
@@ -1577,10 +1571,10 @@
       /* ================= MODULE 2: PASSWORD + HASHING ================= */
       /*
        * Original SHA-256 implementation — written from the FIPS 180-4 specification,
-       * not the browser's Web Crypto API (crypto.subtle). This is our own logic:
+       * not the browser's Web Crypto API (crypto.subtle). This is custom logic:
        * message padding, 64-round compression function, round constants (K) and
        * initial hash values (H) are all implemented explicitly below so the
-       * hashing step is genuinely computed by our code, not delegated to a
+       * hashing step is computed by this code, not delegated to a
        * built-in browser function. Verified against known SHA-256 test vectors
        * (including the empty string and "abc") before use.
        */
@@ -1676,7 +1670,7 @@
       // Web Crypto API's crypto.getRandomValues(). NOTE: this makes it fine for
       // illustrating the *concept* of salting, but it is NOT cryptographically
       // secure — a real system must use a CSPRNG. Flagging that trade-off here is
-      // itself part of the human-factors point: convenience vs. correctness.
+      // itself worth noting: convenience vs. correctness.
       function generateSaltCustom(byteLength) {
         let hex = "";
         for (let i = 0; i < byteLength; i++) {
@@ -1800,42 +1794,42 @@
         {
           device: "iPhone 13",
           location: "Melbourne, AU",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: false,
           duration: 6000,
         },
         {
           device: "iPhone 13",
           location: "Melbourne, AU",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: false,
           duration: 5000,
         },
         {
           device: "iPhone 13",
           location: "Melbourne, AU",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: false,
           duration: 4400,
         },
         {
           device: "Windows PC",
           location: "Kyiv, Ukraine",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: true,
           duration: 3800,
         },
         {
           device: "iPhone 13",
           location: "Melbourne, AU",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: false,
           duration: 3200,
         },
         {
           device: "iPhone 13",
           location: "Melbourne, AU",
-          app: "NorthLine Admin Portal",
+          app: "Admin Portal",
           bad: false,
           duration: 2800,
         },
@@ -1859,7 +1853,7 @@
         mfaIndex = 0;
         mfaResults = [];
         const stage = document.getElementById("mfaStage");
-        stage.innerHTML = `<div class="mfa-idle" id="mfaIdle"><p>Six approval requests are about to arrive at NorthLine's admin portal, each one a little faster than the last — just like a real MFA-bombing attempt.</p><button class="btn btn-trust" id="mfaStart">Start shift simulation</button></div>`;
+        stage.innerHTML = `<div class="mfa-idle" id="mfaIdle"><p>Six approval requests are about to arrive at the company's admin portal, each one a little faster than the last — just like a real MFA-bombing attempt.</p><button class="btn btn-trust" id="mfaStart">Start shift simulation</button></div>`;
         bindMfaStart();
       }
       bindMfaStart();
@@ -1874,7 +1868,7 @@
         stage.innerHTML = `
     <div class="mfa-counter">Request ${mfaIndex + 1} of ${mfaPrompts.length}</div>
     <div class="phone">
-      <div class="phone-top"><span>NorthLine Authenticator</span><span>now</span></div>
+      <div class="phone-top"><span>Authenticator</span><span>now</span></div>
       <div class="phone-body">
         <div class="app">${p.app}</div>
         <h4>Approve sign-in?</h4>
@@ -1949,7 +1943,7 @@
       <span class="stamp ${caughtBad ? "info" : "warn"}">${caughtBad ? "Attack denied" : "Attack succeeded"}</span>
       <h3>${caughtBad ? "You caught the fraudulent request." : "You approved the attacker's login."}</h3>
       <p style="color:var(--ink-soft);font-size:13.5px;">
-        Request 4 came from <b>Kyiv, Ukraine on a Windows PC</b> — nothing like NorthLine's usual Melbourne iPhone logins.
+        Request 4 came from <b>Kyiv, Ukraine on a Windows PC</b> — nothing like the usual Melbourne iPhone logins.
         ${caughtBad ? "Under pressure, you still checked the details and denied it." : "Under repeated prompts, it slipped through — this is exactly how MFA-fatigue (MFA-bombing) attacks succeed in the real world."}
       </p>
       <ul class="timeline">
