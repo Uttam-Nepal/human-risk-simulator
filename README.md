@@ -1,8 +1,6 @@
-# NorthLine Retail Co. — Human Risk Simulator
+Human Risk Simulator
 
-A standalone, single-file interactive artifact built for **MIT205 Human Factors in
-Cybersecurity — Assessment 2 (Group Cybersecurity Case Analysis and Practical
-Evidence Portfolio)**.
+A standalone, single-file interactive artifact 
 
 It accompanies the group report on Scenario B (Online Retail Business) and
 simulates three of the human-factor failures described in that report:
